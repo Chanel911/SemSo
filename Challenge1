@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Validar argumentos
+if [ "$#" -ne 6 ]; then
+  echo "Uso: $0 <NombreVM> <SO_tipo> <CPUs> <RAM_MB> <ControladorSATA> <ControladorIDE>"
+  exit 1
+fi
+
+# Asignar argumentos
+NOMBRE_VM="$1"
+TIPO_SO="$2"
+CPUS="$3"
+RAM_MB="$4"
+SATA="$5"
+IDE="$6"
+
+# Crear la máquina virtual
+VBoxManage createvm --name "$NOMBRE_VM" --ostype "$TIPO_SO" --register
+
+# Configurar CPU y RAM
+VBoxManage modifyvm "$NOMBRE_VM" --cpus "$CPUS" --memory "$RAM_MB"
+
+# Crear disco duro virtual
+VBoxManage createhd --filename "$HOME/VirtualBox VMs/$NOMBRE_VM/$NOMBRE_VM.vdi" --size 10240
+
+# Crear y configurar controladores de almacenamiento
+VBoxManage storagectl "$NOMBRE_VM" --name "$SATA" --add sata --controller IntelAhci
+VBoxManage storageattach "$NOMBRE_VM" --storagectl "$SATA" --port 0 --device 0 --type hdd --medium "$HOME/VirtualBox VMs/$NOMBRE_VM/$NOMBRE_VM.vdi"
+
+VBoxManage storagectl "$NOMBRE_VM" --name "$IDE" --add ide
+VBoxManage storageattach "$NOMBRE_VM" --storagectl "$IDE" --port 0 --device 0 --type dvddrive --medium emptydrive
+
+# Mostrar información de la VM como en tu imagen
+VBoxManage showvminfo "$NOMBRE_VM"
