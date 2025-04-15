@@ -1,0 +1,87 @@
+#!/bin/bash
+
+echo "Bienvenido al menú de opciones :D"
+echo "Escoge alguna de las opciones ingresando el número:"
+echo "1) Listar el contenido de una carpeta"
+echo "2) Crear un archivo de texto con contenido"
+echo "3) Comparar dos archivos de texto"
+echo "4) awk (mostrar una columna de un archivo)"
+echo "5) grep (buscar palabra en un archivo)"
+
+read -p "Opción: " opcion
+
+case $opcion in
+  1)
+    echo "Ingresa la ruta de la carpeta:"
+    read ruta_actual
+
+    while [ ! -d "$ruta_actual" ]; do
+      echo "Carpeta no válida: $ruta_actual"
+      echo "Carpetas disponibles:"
+      
+      opciones=($(ls -d */))
+      i=1
+      for item in "${opciones[@]}"; do
+        echo "$i) $item"
+        ((i++))
+      done
+
+      read -p "Selecciona una carpeta (número): " seleccion
+      ruta_actual="${opciones[$((seleccion-1))]}"
+
+      if [ ! -d "$ruta_actual" ]; then
+        echo "Aún no es un directorio válido."
+        break
+      fi
+    done
+
+    echo "Contenido de la carpeta $ruta_actual:"
+    ls "$ruta_actual"
+    ;;
+
+  2)
+    read -p "Ingresa el mensaje a almacenar: " message
+    echo "$message" > myPersonalText.txt
+    echo "Mensaje almacenado en myPersonalText.txt"
+    ;;
+
+  3)
+    echo "Dame la ruta del primer archivo:"
+    read path1
+    echo "Dame la ruta del segundo archivo:"
+    read path2
+
+    if [[ -f "$path1" && -f "$path2" ]]; then
+      diff "$path1" "$path2"
+    else
+      echo "Uno o ambos archivos no existen."
+    fi
+    ;;
+
+  4)
+    echo "Mira cómo funciona awk en el archivo"
+    read -p "Ingresa la ruta del archivo: " pathAwk
+
+    if [ -f "$pathAwk" ]; then
+      awk '{print $1}' "$pathAwk"
+    else
+      echo "El archivo no existe."
+    fi
+    ;;
+
+  5)
+    echo "Mira cómo funciona grep en el archivo"
+    read -p "Ingresa la ruta (de un archivo con texto): " pathGrep
+    read -p "Ingresa una palabra que quieras buscar en ese texto: " wordGrep
+
+    if [ -f "$pathGrep" ]; then
+      grep -i "$wordGrep" "$pathGrep"
+    else
+      echo "El archivo no existe."
+    fi
+    ;;
+
+  *)
+    echo "No se encontró tu opción"
+    ;;
+esac
