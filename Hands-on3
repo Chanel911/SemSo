@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo "Hola Mundo"
+
+# Mostrar contenido de archivo
+cat mytext.txt
+
+# Crear carpeta y copiar archivo
+echo "Creando backup"
+mkdir -p backup
+cp mytext.txt backup/
+
+# Moverse al directorio y listar archivos
+cd backup
+echo "Contenido de backup"
+ls
+
+# Eliminar archivo dentro del backup
+echo "Eliminando mytext"
+rm mytext.txt
+
+# Regresar al directorio anterior y eliminar carpeta
+cd ..
+echo "Eliminando backup"
+rmdir backup
